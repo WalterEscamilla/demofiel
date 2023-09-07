@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plantilla de Tabs con Tailwind CSS</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        
+<div class="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+    
+<div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+    <h1 class="text-3xl font-bold mb-4 text-center">Demo POC obtener datos fiscales</h1>
+
+    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab" data-tabs-toggle="#myTabContent" role="tablist">
+        <li class="mr-2" role="presentation">
+            <button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-tab" data-tabs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Con la e.firma</button>
+        </li>
+        <li class="mr-2" role="presentation">
+            <button class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="settings-tab" data-tabs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">Por RFC y CIEC</button>
+        </li>
+        <li role="presentation">
+            <button class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="contacts-tab" data-tabs-target="#contacts" type="button" role="tab" aria-controls="contacts" aria-selected="false">Constancia de situacion fiscal</button>
+        </li>
+    </ul>
+</div>
+<div id="myTabContent">
+    <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            Usan la libreria <strong class="font-medium text-gray-800 dark:text-white">@nodecfdi/credentials</strong>. Licencia MIT.</p>
+            <form id="info-credentials" name="inf-credentials">
+                <div>
+                    <fieldset id="certificate-form">
+                        <div class="mt"> 
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Archivo CER</label>
+                            <input id="cert" name="cert-file" type="file" accept=".cer" tabindex="1"  class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
+
+                        </div>
+                        <div class="mt">
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Archivo Key</label>
+                            <input id="key" name="key-file" type="file" accept=".key" tabindex="2"  class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
+
+                        </div>
+                        <div class="mt">
+                            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+        <input type="password"  tabindex="3" name="password" id="pass" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="•••••••••" required>
+   
+                        </div>
+                    </fieldset>
+                    <div style="display: inline">
+                        <buttonclass="button-style" value="1">
+                        </button>
+                        <button  id="certificate-button"  name="process" type="submit"   class="text-white bg-blue-800 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 mr-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            <svg class="-ml-0.5 mr-2 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 14">
+                              <path d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>
+                            </svg>
+                            Consultar informacion de la e.firma
+                          </button>
+                    </div>
+                    <fieldset id="output-certificate-info">
+                        <div style="flex-grow: 1; padding: 5px">
+                           
+                        <dl class="max-w-md text-gray-900 divide-y divide-gray-200 dark:text-white dark:divide-gray-700">
+                            <div class="flex flex-col pb-3">
+                                <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">RFC</dt>
+                                <dd class="text-lg font-semibold" id="rfc_text"></dd>
+                            </div>
+                            <div class="flex flex-col pb-3">
+                                <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">CURP</dt>
+                                <dd class="text-lg font-semibold" id="curp_text"></dd>
+                            </div>
+                            <div class="flex flex-col py-3">
+                                <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">Razon Social</dt>
+                                <dd class="text-lg font-semibold"id="razon_social_text"></dd>
+                            </div>
+                            <div class="flex flex-col pt-3">
+                                <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">Nombre Comercial</dt>
+                                <dd class="text-lg font-semibold" id="nombre_comercial_text"></dd>
+                            </div>
+                            <div class="flex flex-col pt-3">
+                                <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">Pais</dt>
+                                <dd class="text-lg font-semibold" id="pais_text"></dd>
+                            </div>
+                        </dl>
+
+                        </div>
+                     
+                    </fieldset>
+                </div>
+            </form>
+            <script
+                type="text/javascript"
+                src="https://unpkg.com/@nodecfdi/credentials@2.0.3/dist/credentials.global.js"
+            ></script>
+            <script type="text/javascript" defer="defer">
+                const { Credential, Certificate } = window.credentials;
+    
+                async function readFileAsync(file) {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = function (evt) {
+                            resolve(reader.result);
+                        };
+                        reader.onerror = reject;
+                        reader.readAsBinaryString(file);
+                    });
+                }
+    
+              
+    
+                async function process() {
+                    const certFile = document.getElementById('cert').files[0];
+                    const keyFile = document.getElementById('key').files[0];
+                    const password = document.getElementById('pass').value;
+    
+                    if (!certFile) {
+                        alert('Certificado requerido');
+                        return;
+                    }
+    
+                    if (!keyFile) {
+                        alert('Llave requerida');
+                        return;
+                    }
+    
+                    try {
+                        const certContent = await readFileAsync(certFile);
+                        const keyContent = await readFileAsync(keyFile);
+    
+                        const credential = Credential.create(certContent, keyContent, password);
+                        const certificate = credential.certificate();
+                        console.log(certificate)
+                        //output.value = certificate.issuerAsRfc4514();
+                        const rfcTxt = document.getElementById('rfc_text');
+                        const razonSocialTxt = document.getElementById('razon_social_text')
+                        const nombreComercialTxt = document.getElementById('nombre_comercial_text')
+                        const curpTxt  = document.getElementById('curp_text');
+                        const paisTxt = document.getElementById('pais_text')
+
+                        const rfc = certificate.rfc();
+                        const razonSocial = certificate.legalName();
+                        console.log(razonSocial)
+                        rfcTxt.innerText = rfc;
+                        razonSocialTxt.innerText = razonSocial;
+                        nombreComercialTxt.innerText = certificate._dataArray.subject.attributes[0].value;
+                        curpTxt.innerText = certificate._dataArray.subject.attributes[6].value;
+                        paisTxt.innerText =  certificate._dataArray.subject.attributes[3].value;
+
+                    } catch (e) {
+                        console.log(e);
+                        alert(e.message);
+                    }
+                }
+    
+                function initializeForm() {
+                    const form = document.getElementById('info-credentials');
+                    if (!form) {
+                        return;
+                    }
+                    form.addEventListener('submit', function (event) {
+                        const value = event.submitter.value;
+                        event.preventDefault();
+                        process();
+                        return false;
+                    });
+                }
+    
+                initializeForm();
+            </script>
+    </div>
+    
+    <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+        <p class="text-sm text-gray-500 dark:text-gray-400">USando el API-Sandbox de  <strong class="font-medium text-gray-800 dark:text-white">syntage</strong></p>
+        <div class="mt">
+            <div class="grid grid-cols-3 gap-4">
+                <div class="mb-5">
+                    <label for="base-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">RFC</label>
+                    <input type="text" id="rfc-input" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        
+                </div>
+                <div class="mb-4">
+    
+                    <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                    <input type="password"  tabindex="3" name="password" id="pass-input" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="•••••••••" required>
+                   
+                </div>
+                <div style="display: inline">
+                    <buttonclass="button-style" value="1">
+                    </button>
+                    <button  id="syntageapi"  name="syntageapi" type="button"   class="text-white bg-blue-800 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 mr-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <svg class="-ml-0.5 mr-2 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 14">
+                          <path d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>
+                        </svg>
+                        Consultar informacion por API de Sintage
+                      </button>
+                </div>
+                <span class="hidden spinner mr-2" id="spinner"></span>
+
+                <div id="sat-ws"></div>
+            </div>
+           
+        </div>
+        <script>
+            async function obtenerIdDeCredencial(rfc, password) {
+                const baseApi =  'https://api.sandbox.syntage.com';
+                const  data = {
+                    type: 'ciec',
+                    rfc,
+                    password
+                }
+
+            // Configura la solicitud POST
+            const opcionesSolicitud = {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin' : '*',
+                'X-API-KEY' : 'e6448bc356494b2174baf14cb4a2ea17'
+                },
+                body: JSON.stringify(data)
+            };
+
+            try {
+                const response = await fetch('/obtenerIdDeCredencial', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rfc, password }),
+                });
+
+                if (!response.ok) {
+                throw new Error(`Error en la solicitud: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.info(data)
+                // Supongamos que `respuesta` contiene el JSON de respuesta
+
+// Obtener la propiedad "hydra:member" del JSON de respuesta
+            const hydraMember = data["hydra:member"];
+
+            // Obtener el elemento en el DOM donde deseas mostrar los elementos
+            const contenedor = document.getElementById("sat-ws"); // Reemplaza "contenedor" con el ID de tu elemento
+
+            // Recorrer los elementos de "hydra:member"
+            hydraMember.forEach((elemento) => {
+            // Crear un elemento div para representar el elemento
+            const divElemento = document.createElement("div");
+            divElemento.classList.add("bg-gray-100", "p-4", "mb-4"); // Aplicar clases de Tailwind CSS
+
+            // Crear y agregar contenido al elemento div
+            const nombreElemento = document.createElement("h2");
+            nombreElemento.textContent = elemento.company.legalName;
+            nombreElemento.classList.add("text-lg", "font-bold", "mb-2");
+
+            const rfcElemento = document.createElement("p");
+            rfcElemento.textContent = `RFC: ${elemento.rfc}`;
+            rfcElemento.classList.add("text-gray-600");
+
+            const emailElemento = document.createElement("p");
+            emailElemento.textContent = `Email: ${elemento.email}`;
+            emailElemento.classList.add("text-gray-600");
+              // Agregar los elementos creados al elemento div
+            divElemento.appendChild(nombreElemento);
+            divElemento.appendChild(rfcElemento);
+            divElemento.appendChild(emailElemento);
+
+            //address 
+            if (elemento.company)
+            {
+                const legalNameElement = document.createElement("p");
+                legalNameElement.textContent = `Tipo de entidad: ${elemento.company.entityType}`;
+                legalNameElement.classList.add("text-gray-600");
+                divElemento.appendChild(legalNameElement);
+
+
+            }
+            const addresElement = document.createElement("p")
+            const addressContent =`Calle: ${elemento.address.streetNumber}, No: ${elemento.address.buildingNumber} C.P: ${elemento.address.postalCode}, Estado ${elemento.address.state} ${elemento.address.locality}, Ciudad: ${elemento.address.municipality}`
+            addresElement.textContent = `Direccion: ${addressContent}`;
+            addresElement.classList.add("text-gray-600");
+            divElemento.appendChild(addresElement);
+
+            const economyElement = document.createElement("p")
+            economyElement.textContent=`Actividad economica: ${elemento.economicActivities[0].name}`
+            economyElement.classList.add("text-gray-600");
+            divElemento.appendChild(economyElement);
+
+            const taxRegimeElement = document.createElement("p")
+            taxRegimeElement.textContent=`Regimen fiscal: ${elemento.taxRegimes[0].name}`
+
+          
+
+            // Agregar el elemento div al contenedor en el DOM
+            contenedor.appendChild(divElemento);
+            });
+
+
+                console.log(data);
+            } catch (error) {
+                console.error('Error al obtener el ID de la credencial:', error);
+                throw error;
+            }
+            }
+            // Selecciona el botón por su ID
+            const boton = document.getElementById('syntageapi');
+    
+            // Agrega un evento click al botón
+            boton.addEventListener('click', async function() {
+                const spinner =document.getElementById('spinner');
+                spinner.classList.remove('hidden');
+
+                const rfc = document.getElementById('rfc-input').value
+                const password = document.getElementById('pass-input').value
+                obtenerIdDeCredencial(rfc, password).then(function(id) {
+                    spinner.classList.add('hidden');
+                    // Aquí puedes hacer algo con el ID obtenido
+                    });               ;
+            });
+        </script>
+    </div>
+    <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
+        <p class="text-sm text-gray-500 dark:text-gray-400">Usando OCR para leer el RFC</p>
+        <div class="mt"> 
+            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Subir CIF RFC</label>
+            <input id="rfc_cif" name="rfc_cif" type="file" accept="image/*" tabindex="1"  class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
+            <button  id="validatecif"  name="validatecif" type="button"   class="text-white bg-blue-800 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 mr-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                <svg class="-ml-0.5 mr-2 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 14">
+                  <path d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>
+                </svg>
+                Consultar informacion de la CIF
+              </button>
+              <div class="grid grid-cols-3 gap-4">
+                <div class="w-full h-64 mb-4">
+                    <img id="imagePreview" src="#" alt="Vista previa de la imagen" class="hidden  max-w-full">
+                    
+                </div>
+                <div id="content_cif">
+                    
+                </div>
+                <div></div>
+              </div>
+            
+            <p id="errorMessage" class="text-red-500"></p>
+
+        </div>
+        <script>
+            const imageInput = document.getElementById("rfc_cif");
+            const imagePreview = document.getElementById("imagePreview");
+            const errorMessage = document.getElementById("errorMessage");  
+            imageInput.addEventListener("change", function () {
+                    const file = imageInput.files[0];
+
+            if (file) {
+                // Verifica si el archivo es una imagen
+                if (file.type.startsWith("image/")) {
+                    errorMessage.textContent = ""; // Limpia cualquier mensaje de error previo
+
+                    // Crea una URL local para la vista previa de la imagen
+                    const imageUrl = URL.createObjectURL(file);
+                    imagePreview.classList.remove("hidden"); // Elimina el borde rojo del campo de entrada
+
+                    imagePreview.src = imageUrl;
+                } else {
+                    // Muestra un mensaje de error si el archivo no es una imagen
+                    errorMessage.textContent = "Por favor, seleccione una imagen válida.";
+                    imageInput.value = ""; // Limpia el campo de entrada
+                    imagePreview.src = ""; // Limpia la vista previa de la imagen
+                }
+            }
+        });    
+        //------------
+        document.getElementById('validatecif').addEventListener('click', () => {
+            const fileInput = document.getElementById('rfc_cif');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Selecciona un archivo antes de continuar.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/validate-cif', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                const info = data.data;
+                const contenedor = document.getElementById('content_cif');
+                
+                    const divElemento = document.createElement("div");
+
+                    const rfcElemento = document.createElement("p");
+                    rfcElemento.textContent = `RFC: ${info.RFC}`;
+                    rfcElemento.classList.add("text-gray-600");
+                    divElemento.appendChild(rfcElemento);
+
+                    const curpElement = document.createElement("p");
+                    curpElement.textContent = `CUPR: ${info.CURP}`;
+                    curpElement.classList.add("text-gray-600");
+                    divElemento.appendChild(curpElement);
+
+                    const nameElement = document.createElement("p");
+                    nameElement.textContent = `Nombre: ${info.Nombre}`;
+                    nameElement.classList.add("text-gray-600");
+                    divElemento.appendChild(nameElement);
+
+                    const dateBirthElement = document.createElement("p");
+                    dateBirthElement.textContent = `Fecha de nacimiento: ${info.FechaNacimiento}`;
+                    dateBirthElement.classList.add("text-gray-600");
+                    divElemento.appendChild(dateBirthElement);
+
+                    const stateElement = document.createElement("p");
+                    stateElement.textContent = `Entidad Federativa: ${info.EntidadFederativa}`;
+                    stateElement.classList.add("text-gray-600");
+                    divElemento.appendChild(stateElement);
+
+                    const cityElement = document.createElement("p");
+                    cityElement.textContent = `Municipio/Delegacion: ${info.MunicipioDelegacion}`;
+                    cityElement.classList.add("text-gray-600");
+                    divElemento.appendChild(cityElement);
+
+                    const ngbElement = document.createElement("p");
+                    ngbElement.textContent = `Colonia: ${info.Colonia}`;
+                    ngbElement.classList.add("text-gray-600");
+                    divElemento.appendChild(ngbElement);
+
+                    const typeStreetElement = document.createElement("p");
+                    typeStreetElement.textContent = `Colonia: ${info.TipoVialidad}`;
+                    typeStreetElement.classList.add("text-gray-600");
+                    divElemento.appendChild(typeStreetElement);
+
+                    const streetElement = document.createElement("p");
+                    streetElement.textContent = `Nombre Vialidad: ${info.NombreVialidad}`;
+                    streetElement.classList.add("text-gray-600");
+                    divElemento.appendChild(streetElement);
+
+                    const exteriorElement = document.createElement("p");
+                    exteriorElement.textContent = `# Exterior: ${info.NumeroExterior}`;
+                    exteriorElement.classList.add("text-gray-600");
+                    divElemento.appendChild(exteriorElement);
+
+                    const zipCodeELement = document.createElement("p");
+                    zipCodeELement.textContent = `CP: ${info.CP}`;
+                    zipCodeELement.classList.add("text-gray-600");
+                    divElemento.appendChild(zipCodeELement);
+
+                    const regimeElement = document.createElement("p");
+                    regimeElement.textContent = `Regimen: ${info.Regimen}`;
+                    regimeElement.classList.add("text-gray-600");
+                    divElemento.appendChild(regimeElement);
+
+                    const urlElement = document.createElement("p");
+                    const url = document.createElement("a");
+                    url.href = info.url;
+                    url.textContent = "Ver Info del SAT";
+                    urlElement.textContent = `Regimen: `;
+                    urlElement.appendChild(url);
+                    urlElement.classList.add("text-gray-600");
+                    divElemento.appendChild(urlElement);
+
+
+                    contenedor.appendChild(divElemento);
+                
+
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });  
+        </script>
+    </div>
+</div>
+
+</div>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
+</body>
+</html>
