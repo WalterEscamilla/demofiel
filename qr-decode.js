@@ -6,12 +6,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 
-// Ruta de la imagen que contiene el código QR
-const imagePath = 'cif/RFC.jpg'; // Reemplaza con la ruta de tu imagen
 
-// Lee la imagen desde el archivo
-const image = fs.readFileSync(imagePath);
-const img = new Uint8Array(image);
 
 // Carga la imagen en un objeto Canvas utilizando la biblioteca canvas
 async function getDataFromImage(imagePath) {
@@ -63,6 +58,12 @@ data.CURP = $('#ubicacionForm td:contains("CURP:")').next().text();
 
 // Extraer Nombre
 data.Nombre = $('#ubicacionForm  td:contains("Nombre:")').next().text();
+
+// Extraer Apellido Paterno
+data.ApellidoPaterno = $('#ubicacionForm  td:contains("Apellido Paterno:")').next().text();
+
+// Extraer Apellido Materno
+data.ApellidoMaterno = $('#ubicacionForm  td:contains("Apellido Materno:")').next().text();
 
 // Extraer Fecha de Nacimiento
 data.FechaNacimiento = $('#ubicacionForm td:contains("Fecha Nacimiento:")').next().text();
