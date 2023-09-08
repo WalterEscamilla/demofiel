@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plantilla de Tabs con Tailwind CSS</title>
+    <title>Demo POC FIEl </title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" rel="stylesheet" />
 </head>
@@ -23,7 +23,7 @@
             <button class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="settings-tab" data-tabs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">Por RFC y CIEC</button>
         </li>
         <li role="presentation">
-            <button class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="contacts-tab" data-tabs-target="#contacts" type="button" role="tab" aria-controls="contacts" aria-selected="false">Constancia de situacion fiscal</button>
+            <button class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="contacts-tab" data-tabs-target="#contacts" type="button" role="tab" aria-controls="contacts" aria-selected="false">Cédula de identificación fiscal</button>
         </li>
     </ul>
 </div>
@@ -280,7 +280,7 @@
 
             }
             const addresElement = document.createElement("p")
-            const addressContent =`Calle: ${elemento.address.streetNumber}, No: ${elemento.address.buildingNumber} C.P: ${elemento.address.postalCode}, Estado ${elemento.address.state} ${elemento.address.locality}, Ciudad: ${elemento.address.municipality}`
+            const addressContent =`Calle: ${elemento.address.streetNumber}, Nombre de calle: ${elemento.address.streetName} No de edificio: ${elemento.address.buildingNumber} C.P: ${elemento.address.postalCode}, Estado: ${elemento.address.state} Localidad: ${elemento.address.locality}, Municipio: ${elemento.address.municipality}`
             addresElement.textContent = `Direccion: ${addressContent}`;
             addresElement.classList.add("text-gray-600");
             divElemento.appendChild(addresElement);
@@ -290,8 +290,15 @@
             economyElement.classList.add("text-gray-600");
             divElemento.appendChild(economyElement);
 
+            const taxRegimeCodeElement = document.createElement("p")
+            taxRegimeCodeElement.textContent=`Codigo Regimen fiscal:  ${elemento.taxRegimes[0].code}`
+            taxRegimeCodeElement.classList.add("text-gray-600");
+            divElemento.appendChild(taxRegimeCodeElement);
+
             const taxRegimeElement = document.createElement("p")
-            taxRegimeElement.textContent=`Regimen fiscal: ${elemento.taxRegimes[0].name}`
+            taxRegimeElement.textContent=`Regimen fiscal:  ${elemento.taxRegimes[0].name}`
+            taxRegimeElement.classList.add("text-gray-600");
+            divElemento.appendChild(taxRegimeElement);
 
           
 
@@ -324,7 +331,7 @@
         </script>
     </div>
     <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
-        <p class="text-sm text-gray-500 dark:text-gray-400">Usando OCR para leer el RFC</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Usando OCR para leer la CIFC</p>
         <div class="mt"> 
             <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Subir CIF RFC</label>
             <input id="rfc_cif" name="rfc_cif" type="file" accept="image/*" tabindex="1"  class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
@@ -412,6 +419,16 @@
                     nameElement.classList.add("text-gray-600");
                     divElemento.appendChild(nameElement);
 
+                    const middleLastNameElement = document.createElement("p");
+                    middleLastNameElement.textContent = `Apellido Paterno: ${info.ApellidoPaterno}`;
+                    middleLastNameElement.classList.add("text-gray-600");
+                    divElemento.appendChild(middleLastNameElement);
+
+                    const lastNameElement = document.createElement("p");
+                    lastNameElement.textContent = `Apellido Paterno: ${info.ApellidoMaterno}`;
+                    lastNameElement.classList.add("text-gray-600");
+                    divElemento.appendChild(lastNameElement);
+
                     const dateBirthElement = document.createElement("p");
                     dateBirthElement.textContent = `Fecha de nacimiento: ${info.FechaNacimiento}`;
                     dateBirthElement.classList.add("text-gray-600");
@@ -453,7 +470,12 @@
                     divElemento.appendChild(zipCodeELement);
 
                     const regimeElement = document.createElement("p");
-                    regimeElement.textContent = `Regimen: ${info.Regimen}`;
+                    const textoRegimen = info.Regimen;
+                    const regex = /Régimen/g; // busca la palabra "Régimen" incluso si no hay espacios antes de ella
+                    const resultadorRegimen = textoRegimen.replace(regex, (match) => `,${match}`); // agrega una coma antes de la palabra "Regimen"
+                    
+
+                    regimeElement.textContent = `Régimen: ${resultadorRegimen.replace(/^,/, '')}`;
                     regimeElement.classList.add("text-gray-600");
                     divElemento.appendChild(regimeElement);
 
@@ -461,7 +483,7 @@
                     const url = document.createElement("a");
                     url.href = info.url;
                     url.textContent = "Ver Info del SAT";
-                    urlElement.textContent = `Regimen: `;
+                    urlElement.textContent = `URL DEL SAT: `;
                     urlElement.appendChild(url);
                     urlElement.classList.add("text-gray-600");
                     divElemento.appendChild(urlElement);
