@@ -25,6 +25,9 @@
         <li role="presentation">
             <button class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="contacts-tab" data-tabs-target="#contacts" type="button" role="tab" aria-controls="contacts" aria-selected="false">Cédula de identificación fiscal</button>
         </li>
+        <li role="presentation">
+            <button class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="connstancia-tab" data-tabs-target="#constancia" type="button" role="tab" aria-controls="constancia" aria-selected="false">Constancia de situación fiscal</button>
+        </li>
     </ul>
 </div>
 <div id="myTabContent">
@@ -497,6 +500,136 @@
                 console.error('Error:', error);
             });
         });  
+        </script>
+    </div>
+    <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="constancia" role="tabpanel" aria-labelledby="constancia-tab"> 
+        <p class="text-sm text-gray-500 dark:text-gray-400">Usando PDF Parse para leer la constancia de situacion fiscal</p>
+        <div class="mt"> 
+            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Subir Archivo PDF</label>
+            <input id="csf_file" name="csf_file" type="file" accept="application/pdf" tabindex="1"  class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file">
+            <button  id="validatecsf"  name="validatecsf" type="button"   class="text-white bg-blue-800 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 mr-2 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                <svg class="-ml-0.5 mr-2 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 14">
+                  <path d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>
+                </svg>
+                Consultar informacion de la Constancia de situación fiscal 
+              </button>
+              <div class="grid grid-cols-3 gap-4">
+                <div id="content_csf">
+                    
+                </div>
+                <div></div>
+              </div>
+            
+            <p id="errorMessage" class="text-red-500"></p>
+
+        </div>
+        <script>
+             function createList(items) {
+                const ul = document.createElement("ul");
+                ul.classList.add("max-w-md", "space-y-1", "list-none", "list-inside");
+
+                for (const item of items) {
+                    const li = document.createElement("li");
+                    li.textContent = item;
+                    ul.appendChild(li);
+                }
+
+                return ul;
+            }
+
+              // Función para crear una sección
+              function createSection(title, content) {
+                const div = document.createElement("div");
+                div.classList.add("bg-white", "p-4", "rounded", "shadow");
+
+                const h2 = document.createElement("h2");
+                h2.classList.add("text-lg", "font-semibold");
+                h2.textContent = title;
+
+                div.appendChild(h2);
+                div.appendChild(content);
+
+                return div;
+            }
+             document.getElementById('validatecsf').addEventListener('click', () => {
+            const fileInput = document.getElementById('csf_file');
+            const file = fileInput.files[0];
+            const contentCsf = document.getElementById('content_csf');
+            contentCsf.innerHTML = "";
+
+            if (!file) {
+                alert('Selecciona un archivo antes de continuar.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('pdf', file);
+
+            fetch('/extract-data-constancia', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(apiResponse => {
+                 // Obtener elementos del API
+            const identificacion = apiResponse.data.identificacion;
+            const direccion = apiResponse.data.direccion;
+            const actividades = apiResponse.data.actividades;
+            const regimenes = apiResponse.data.regimenes;
+             // Crear secciones
+             const identificacionSection = createSection("Identificación", createList([
+                `RFC: ${identificacion.RFC}`,
+                `CURP: ${identificacion.CURP}`,
+                `Nombre: ${identificacion.Nombre}`,
+                `Apellido Paterno: ${identificacion.ApellidoPaterno}`,
+                `Apellido Materno: ${identificacion.ApellidoMaterno}`
+            ]));
+
+            const direccionSection = createSection("Dirección", createList([
+                `Código Postal: ${direccion.cp}`,
+                `Tipo de Vialidad: ${direccion.tipoVialidad}`,
+                `Nombre de Vialidad: ${direccion.NombredeVialidad}`,
+                `Número Exterior: ${direccion.NumeroExterior}`,
+                `Colonia: ${direccion.colonia}`,
+                `Nombre Localidad: ${direccion.NombreLocalidad}`,
+                `Nombre Municipio: ${direccion.NombreMunicipio}`,
+                `Entidad: ${direccion.Entidad}`,
+                `Referencia de Calle: ${direccion.ReferenciaCalle.join(", ")}`
+            ]));
+
+            const actividadesSection = createSection("Actividades", createList(
+                actividades.map(item => `Orden: ${item.orden}, Nombre: ${item.nombre}, Fecha: ${item.fecha}`)
+            ));
+
+            const regimenesSection = createSection("Regímenes", createList(
+                regimenes.map(item => `Nombre: ${item.nombre}, Fecha de Inicio: ${item.fechaInicio ? item.fechaInicio: ''}`)
+            ));
+            contentCsf.appendChild(identificacionSection);
+            contentCsf.appendChild(direccionSection);
+            contentCsf.appendChild(actividadesSection);
+            contentCsf.appendChild(regimenesSection);
+
+            const urlElement = document.createElement("p");
+            const url = document.createElement("a");
+            url.href = apiResponse.data.urlPDF;
+            url.textContent = "Ver Info del PDF";
+            urlElement.textContent = `URL DEL PDF: `;
+            urlElement.appendChild(url);
+            urlElement.classList.add("text-gray-600");
+
+
+            contentCsf.appendChild(urlElement);
+
+           
+
+                
+                
+
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }); 
         </script>
     </div>
 </div>

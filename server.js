@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const axios = require('axios'); // Importa la biblioteca Axios
 const multer = require('multer'); // Para manejar archivos
 const getDataFromImage = require('./qr-decode');
+const extractTextFromPDF = require('./pdf-extract-satsf');
 // Configuración de multer para manejar archivos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -84,11 +85,20 @@ app.post('/obtenerIdDeCredencial', async (req, res) => {
     if (req.file) {
         const imagePath = 'CIF/' + req.file.filename;
         const data = await getDataFromImage(imagePath);
-        console.log(data);
         res.json({ data });
     } else {
         res.status(400).json({ error: 'No se cargó ningún archivo.' });
     }
+});
+app.post('/extract-data-constancia', upload.single('pdf'), async (req, res) => {
+  if (req.file) {
+      const pdfPath = 'CIF/' + req.file.filename;
+      const data = await extractTextFromPDF(pdfPath);
+      console.log(data);
+      res.json({ data });
+  } else {
+      res.status(400).json({ error: 'No se cargó ningún archivo.' });
+  }
 });
 
 // Inicia el servidor

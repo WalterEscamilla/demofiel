@@ -128,3 +128,10 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+# Ignorar todos los archivos dentro de la carpeta cif
+cif/*
+
+# Permitir la carpeta cif en el repositorio
+!cif/
